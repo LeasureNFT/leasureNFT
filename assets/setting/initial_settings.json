@@ -1,0 +1,19 @@
+{
+  "app_name": "Leasure NFT",
+  "default_theme" : "light",
+  "light_theme": {
+    "primary_color": "#004aad",
+    "primary_dark_color": "#004aad",
+    "accent_color": "#acce22",
+    "accent_dark_color": "#acce22",
+    "scaffold_color": "#f6faea",
+    "text_color": "#212121",
+    "hint_color" : "#797979"
+  },
+  "google_map_key": "",
+  "app_language" : "en_US",
+  "app_version": "1.0.0",
+  "enable_version": "1",
+  "font_family": "Outfit"
+
+}

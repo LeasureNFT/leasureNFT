@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "241461826546",
+    "project_id": "leasure-nft-88aaf",
+    "storage_bucket": "leasure-nft-88aaf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241461826546:android:ffb498d91b512c6545516b",
+        "android_client_info": {
+          "package_name": "com.example.leasure_nft"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLr51tHYecaRibUtw1fsUNb9U3uZQR7Xg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
