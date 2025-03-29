@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 class DashboardController extends GetxController {
   final auth = FirebaseAuth.instance;
   final totalRevenue = 0.0.obs;
+
   RxList<Map<String, dynamic>> usersList = <Map<String, dynamic>>[].obs;
+  RxInt totalUsers = 0.obs; // ✅ Total Users Count
+  RxInt totalBannedUsers = 0.obs;
 
   @override
   void onInit() {
@@ -20,13 +23,23 @@ class DashboardController extends GetxController {
   }
 
   // 🔹 Firestore سے تمام Users حاصل کرنے کا Function
-  void getUsers() async {
+  void getUsers() {
     try {
       FirebaseFirestore.instance
           .collection('users')
           .snapshots()
           .listen((snapshot) {
-        usersList.value = snapshot.docs.map((doc) => doc.data()).toList();
+        final updatedUsers = snapshot.docs.map((doc) => doc.data()).toList();
+
+        // ✅ Efficiently update the observable list
+        usersList.assignAll(updatedUsers);
+
+        // ✅ Total Users Count
+        totalUsers.value = updatedUsers.length;
+
+        // ✅ Count Banned Users (isUserBanned == true)
+        totalBannedUsers.value =
+            updatedUsers.where((user) => user['isUserBanned'] == true).length;
       });
     } catch (e) {
       Get.snackbar("Error", "Failed to fetch users: $e");

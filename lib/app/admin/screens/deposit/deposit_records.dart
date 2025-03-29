@@ -9,6 +9,7 @@ import 'package:leasure_nft/app/core/widgets/header.dart';
 import 'package:leasure_nft/app/users/screens/records/user_deposit_records.dart';
 
 class AdminDepositRecords extends GetView<DepositRecordController> {
+  const AdminDepositRecords({super.key});
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DepositRecordController>(

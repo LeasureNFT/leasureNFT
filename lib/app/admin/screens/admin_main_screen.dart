@@ -59,53 +59,113 @@ class AdminMainScreen extends GetView<DashboardController> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 13.w, vertical: 15.h),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.r),
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primaryColor,
-                                  AppColors.accentColor
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.people,
-                                    color: AppColors.whiteColor,
-                                    size: 30.sp,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text('Total users',
-                                      style: AppTextStyles.adaptiveText(
-                                              context, 16)
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.whiteColor)),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 8.h,
-                              ),
-                              Obx(
-                                () => Text(
-                                    controller.usersList.length.toString(),
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        AppTextStyles.adaptiveText(context, 24)
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.whiteColor)),
-                              )
-                            ],
-                          )),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 13.w, vertical: 15.h),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.primaryColor,
+                                        AppColors.accentColor
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.people,
+                                          color: AppColors.whiteColor,
+                                          size: 30.sp,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text('Total users',
+                                            style: AppTextStyles.adaptiveText(
+                                                    context, 16)
+                                                .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color:
+                                                        AppColors.whiteColor)),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 8.h,
+                                    ),
+                                    Obx(
+                                      () => Text(
+                                          controller.totalUsers.value
+                                              .toString(),
+                                          textAlign: TextAlign.center,
+                                          style: AppTextStyles.adaptiveText(
+                                                  context, 24)
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.whiteColor)),
+                                    )
+                                  ],
+                                )),
+                          ),
+                          VerticalDivider(),
+                          Expanded(
+                            child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 13.w, vertical: 15.h),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.primaryColor,
+                                        AppColors.accentColor
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.people,
+                                          color: AppColors.whiteColor,
+                                          size: 30.sp,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text('Banned Users',
+                                            style: AppTextStyles.adaptiveText(
+                                                    context, 16)
+                                                .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color:
+                                                        AppColors.whiteColor)),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 8.h,
+                                    ),
+                                    Obx(
+                                      () => Text(
+                                          controller.totalBannedUsers.value
+                                              .toString(),
+                                          textAlign: TextAlign.center,
+                                          style: AppTextStyles.adaptiveText(
+                                                  context, 24)
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.whiteColor)),
+                                    )
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
                       SizedBox(
                         height: 20.h,
                       ),

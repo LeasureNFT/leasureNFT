@@ -96,43 +96,72 @@ class TransactionDetailsController extends GetxController {
     }
   }
 
-  Future<void> confirmWithdraw({userId, amount, docId}) async {
+  Future<void> confirmWithdraw(
+      {required String userId,
+      required String amount,
+      required String docId}) async {
     try {
       isLoading.value = true;
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      double am =
-          double.tryParse(amount.toString()) ?? 0.0; // ✅ Convert to double
-
-      await firestore.runTransaction((transactions) async {
-        // 🔹 Update payment status to "completed"
+      await firestore.runTransaction((transaction) async {
+        // 🔹 Reference to payment document
         DocumentReference paymentRef =
             firestore.collection('payments').doc(docId);
-        transactions.update(paymentRef, {'status': 'completed'});
 
-        // 🔹 Update user's withdrawAmount & cashVault (Decrement cashVault)
+        // 🔹 Reference to user document
         DocumentReference userRef = firestore.collection('users').doc(userId);
-        transactions.update(userRef, {
+
+        // 🔹 Fetch current user data to verify balance
+        // final userSnapshot = await transaction.get(userRef);
+
+        // if (!userSnapshot.exists) {
+        //   throw Exception("User not found");
+        // }
+
+        // double currentVault = double.parse(userSnapshot['cashVault'] ?? 0.0);
+
+        double am = double.tryParse(amount.toString()) ?? 0.0;
+        // 🔥 Ensure user has enough balance
+
+        // if (currentVault < am) {
+        //   Fluttertoast.showToast(
+        //     msg: "Insufficient balance in cash vault.",
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.BOTTOM,
+        //     backgroundColor: Colors.red,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0,
+        //   );
+        //   return;
+        // }
+
+        // 🔹 Update payment status to "completed"
+
+        transaction.update(paymentRef, {'status': 'completed'});
+
+        // 🔹 Update user's withdrawAmount and cashVault
+        transaction.update(userRef, {
           'withdrawAmount':
-              FieldValue.increment(am).toString(), // ✅ Add to Withdraw Amount
-          'cashVault':
-              FieldValue.increment(-am).toString(), // 🔥 Deduct from Cash Vault
+              FieldValue.increment(am), // ✅ Add to Withdraw Amount
+          'cashVault': FieldValue.increment(-am), // ✅ Deduct from Cash Vault
         });
-      }).then((v) async {
-        await withdrawController.fetchPayments();
       });
+
+      // 🔄 Refresh payment data
+      await withdrawController.fetchPayments();
+
+      // ✅ Success message
       Fluttertoast.showToast(
         msg: "Payment Confirmed successfully!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
         backgroundColor: Colors.green,
         textColor: Colors.white,
         fontSize: 16.0,
       );
-
-      // 🔄 Refresh data
     } catch (e) {
+      // ❌ Error handling
       Get.snackbar("Error", "Failed to confirm withdrawal: ${e.toString()}",
           snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
     } finally {

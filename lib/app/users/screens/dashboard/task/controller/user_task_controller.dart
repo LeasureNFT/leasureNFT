@@ -179,7 +179,7 @@ class UserTaskController extends GetxController {
       double profit = 0.0;
       if (refferrelProfit >= 0) {
         profit = cashValue * 0.02; // 2% of cashVault
-        cashValue += profit;
+        cashValue += cashValue * 0.02;
         refferrelProfit += profit;
 
         // Step 6: Update cashVault & referral profit in Firestore

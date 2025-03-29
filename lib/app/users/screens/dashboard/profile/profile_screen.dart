@@ -8,12 +8,14 @@ import 'package:leasure_nft/app/core/app_colors.dart';
 import 'package:leasure_nft/app/core/app_textstyle.dart';
 import 'package:leasure_nft/app/core/widgets/header.dart';
 import 'package:leasure_nft/app/users/contollers/user_main_controller.dart';
+import 'package:leasure_nft/app/users/screens/contact_us/contact_us_screen.dart';
 import 'package:leasure_nft/app/users/screens/records/record_screen.dart';
 import 'package:leasure_nft/app/auth_screens/user_login_screen.dart';
 import 'package:leasure_nft/app/users/screens/dashboard/about_us/about_us_screen.dart';
 import 'package:leasure_nft/app/users/screens/dashboard/profile/controller/profile_controller.dart';
 import 'package:leasure_nft/app/users/screens/dashboard/profile/update_profile_screen.dart';
 import 'package:leasure_nft/app/core/utils/common_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserProfileScreen extends GetView<ProfileController> {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -106,28 +108,40 @@ class UserProfileScreen extends GetView<ProfileController> {
                           ),
                           _buildProfileOption(
                             context: context,
-                            icon: Icons.help,
-                            title: 'Help & Support',
+                            icon: Icons.contact_support_sharp,
+                            title: 'Contact Us',
                             onTap: () {
+                              Get.to(() => ContactUsScreen());
                               // Navigate to help and support screen
                             },
                           ),
                           _buildProfileOption(
                             context: context,
                             icon: Icons.info,
-                            title: 'About US',
+                            title: 'About Us',
                             onTap: () {
                               Get.to(() => AboutUsScreen());
                             },
                           ),
-                          _buildProfileOption(
-                            context: context,
-                            icon: Icons.download,
-                            title: 'Download App',
-                            onTap: () {
-                              // Get.to(() => AboutUsScreen());
-                            },
-                          ),
+                          if (GetPlatform.isWeb)
+                            _buildProfileOption(
+                              context: context,
+                              icon: Icons.download,
+                              title: 'Download App',
+                              onTap: () async {
+                                // "https://github.com/LeasureNFT/leasureNFT/releases/download/1.0.0/app-release.apk"
+                                // Get.to(() => AboutUsScreen());
+                                final Uri url = Uri.parse(
+                                    "https://github.com/LeasureNFT/leasureNFT/releases/download/1.0.4/app-release.apk");
+
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url,
+                                      mode: LaunchMode.externalApplication);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
+                              },
+                            ),
                           _buildProfileOption(
                             context: context,
                             icon: Icons.logout,

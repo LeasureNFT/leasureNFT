@@ -14,7 +14,7 @@ import 'package:leasure_nft/app/users/screens/dashboard/withdraw/controller/user
 class WithdrawalScreen extends GetView<UserWithdrawController> {
   //
 
-  WithdrawalScreen({
+  const WithdrawalScreen({
     Key? key,
   }) : super(
           key: key,
@@ -201,11 +201,14 @@ class WithdrawalScreen extends GetView<UserWithdrawController> {
                     SizedBox(height: 30.h),
 
                     // Submit Button
-                    CustomButton(
-                        onPressed: () async {
-                          await controller.submitPayment();
-                        },
-                        text: "Withdraw")
+                    Obx(
+                      () => CustomButton(
+                          loading: controller.isloading.value,
+                          onPressed: () async {
+                            await controller.submitPayment();
+                          },
+                          text: "Withdraw"),
+                    )
                   ],
                 ),
               ),

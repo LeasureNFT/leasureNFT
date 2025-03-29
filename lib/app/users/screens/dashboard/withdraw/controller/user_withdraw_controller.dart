@@ -16,6 +16,7 @@ class UserWithdrawController extends GetxController {
       TextEditingController();
 
   var cashVault = 0.0.obs;
+  var isloading = false.obs;
   RxString selectedPaymentMethod = ''.obs;
   RxList<String> paymentMethods = <String>[
     'Easypaisa - Telenor Microfinance Bank',
@@ -28,8 +29,9 @@ class UserWithdrawController extends GetxController {
     'Faysal Bank Limited',
     'Bank Alfalah Limited',
     'Standard Chartered Bank Pakistan Limited',
+    'SadaPay',
+    'NayaPay',
   ].obs;
-  var isloading = false.obs;
 
   @override
   void onInit() {
@@ -46,10 +48,10 @@ class UserWithdrawController extends GetxController {
 
   void fetchCashVault() async {
     try {
-      final user_id = FirebaseAuth.instance.currentUser!.uid;
+      final userId = FirebaseAuth.instance.currentUser!.uid;
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(user_id)
+          .doc(userId)
           .get();
       if (userDoc.exists) {
         cashVault.value = userDoc['cashVault'] ?? 0;
@@ -97,8 +99,8 @@ class UserWithdrawController extends GetxController {
 
         return;
       }
+      isloading.value = true;
 
-      CustomLoading.show();
       final user_id = FirebaseAuth.instance.currentUser!.uid;
 
       if (cashVault.value < 500) {
@@ -107,6 +109,7 @@ class UserWithdrawController extends GetxController {
           msg: "Your Balance is less than 500",
         );
 
+        isloading.value = false;
         return;
       }
 
@@ -114,7 +117,7 @@ class UserWithdrawController extends GetxController {
         "userId": user_id,
         "transactionId": generateTransactionId(),
         'payment_method': selectedPaymentMethod.value,
-        'accountName': bankNameController.text.trim(),
+        'accountName': selectedPaymentMethod.value,
         'accountNumber': accountNumberController.text.trim(),
         "transactionType": "Withdraw",
         "holderName": accountHolderNameController.text.trim(),
@@ -122,7 +125,7 @@ class UserWithdrawController extends GetxController {
         'status': 'pending',
         "createdAt": FieldValue.serverTimestamp(),
       }).then((value) {
-        CustomLoading.hide();
+        Get.back();
         Fluttertoast.showToast(
           msg: "Withdraw Request Sent",
           toastLength: Toast.LENGTH_SHORT,
@@ -131,15 +134,15 @@ class UserWithdrawController extends GetxController {
           textColor: Colors.white,
           fontSize: 16.0,
         );
+        isloading.value = false;
       });
 
-      Get.back();
       amountController.clear();
       accountHolderNameController.clear();
       accountNumberController.clear();
       selectedPaymentMethod.value = '';
     } catch (e) {
-      CustomLoading.hide();
+      isloading.value = false;
       Fluttertoast.showToast(
         msg: "Error: ${e.toString()}",
         toastLength: Toast.LENGTH_SHORT,
@@ -148,6 +151,7 @@ class UserWithdrawController extends GetxController {
         textColor: Colors.white,
         fontSize: 16.0,
       );
+      Get.log(e.toString());
     }
   }
 }

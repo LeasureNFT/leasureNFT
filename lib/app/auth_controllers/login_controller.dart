@@ -22,27 +22,48 @@ class LoginController extends GetxController {
   Future<void> loginUser() async {
     isLoading.value = true;
     try {
+      // Authenticate user
       await auth
           .signInWithEmailAndPassword(
-              email: emailController.text.trim(),
-              password: passwordController.text.trim())
-          .then((v) {
-        if (emailController.text == "admin@gmail.com" &&
-            passwordController.text == "admin123") {
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      )
+          .then((v) async {
+        if (v.user!.email != "admin@gmail.com") {
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(v.user?.uid)
+              .get();
+
+          // Check if user exists in Firestore
+          if (!userDoc.exists) {
+            isLoading.value = false;
+            MessageToast.showToast(msg: 'User not found in database');
+            return;
+          }
+
+          // Check if user is banned
+          bool isBanned = userDoc.data()?['isUserBanned'] ?? false;
+          if (isBanned) {
+            isLoading.value = false;
+            MessageToast.showToast(
+                msg: 'Your account has been banned. Please contact admin.');
+
+            return;
+          } else {
+            Get.offAllNamed(AppRoutes.userDashboard);
+          }
+        } else {
           AppPrefernces.setAdmin("admin");
           Get.offAllNamed(AppRoutes.adminDashboard);
-        } else {
-          Get.offAllNamed(AppRoutes.userDashboard);
         }
-        isLoading.value = false;
-        MessageToast.showToast(msg: 'Login Successfully');
-        // Get.offAll(DashboardScreen());
-      }).onError((e, _) {
-        isLoading.value = false;
-        Get.log(e.toString());
-        MessageToast.showToast(
-            msg: 'Something went wrong, please try again $e');
+        // Check if the user is an admin
       });
+
+      // Get user data from Firestore
+
+      isLoading.value = false;
+      MessageToast.showToast(msg: 'Login Successfully');
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
       if (e.code == 'wrong-password') {

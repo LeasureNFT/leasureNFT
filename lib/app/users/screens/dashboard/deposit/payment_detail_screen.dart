@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:leasure_nft/app/core/app_colors.dart';
 import 'package:leasure_nft/app/core/app_textstyle.dart';
@@ -217,34 +217,36 @@ class PaymentDetailScreen extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 20.h),
-                  Obx(
-                    () => Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 250.w,
-                        height: 200.h,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: controller.filePath.value != null
-                                ? Image.file(
-                                    controller.filePath.value!,
-                                    fit: BoxFit.fill,
-                                  )
-                                : Center(
-                                    child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.upload_file,
-                                        color: AppColors.accentColor,
-                                        size: 50,
-                                      ),
-                                    ],
-                                  ))),
-                      ),
-                    ),
+                  Center(
+                    child: Obx(() {
+                      if (controller.base64Image.value.isNotEmpty) {
+                        // Convert base64 string to bytes
+                        Uint8List imageBytes =
+                            base64Decode(controller.base64Image.value);
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.memory(
+                            imageBytes,
+                            fit: BoxFit.cover,
+                            width: 300,
+                            height: 300,
+                          ),
+                        );
+                      } else {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.upload_file,
+                              color: Colors.blueAccent,
+                              size: 50,
+                            ),
+                            SizedBox(height: 10),
+                            Text("No Image Selected"),
+                          ],
+                        );
+                      }
+                    }),
                   ),
                   SizedBox(
                     height: 10.h,
@@ -283,18 +285,11 @@ class PaymentDetailScreen extends StatelessWidget {
                     () => CustomButton(
                         onPressed: () {
                           if (formkey.currentState!.validate()) {
-                            if (controller.filePath.value == null) {
-                              Fluttertoast.showToast(
-                                msg: '❌ No Image Selected!',
-                                backgroundColor: Colors.red,
-                              );
-                            } else {
-                              controller.submitPayment(
-                                  acName: payment['accountName'],
-                                  acNumber: payment['accountNumber'],
-                                  holdername: payment["bankName"],
-                                  paymentmethod: payment['accountName']);
-                            }
+                            controller.submitPayment(
+                                acName: payment['accountName'],
+                                acNumber: payment['accountNumber'],
+                                holdername: payment["bankName"],
+                                paymentmethod: payment['accountName']);
                           }
                         },
                         loading: controller.isloading.value,

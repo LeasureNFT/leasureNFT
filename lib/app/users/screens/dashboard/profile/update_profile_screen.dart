@@ -36,12 +36,12 @@ class UpdateProfileScreen extends GetView<EditProfileController> {
                               () => CircleAvatar(
                                 radius: 60.r,
                                 backgroundColor: Colors.lightBlue[100],
-                                child: controller.profileImage.value.isNotEmpty
+                                child: controller.base64Image.value.isNotEmpty
                                     ? ClipOval(
                                         // Ensures the image stays within the circle
                                         child: Image.memory(
                                           base64Decode(
-                                              controller.profileImage.value),
+                                              controller.base64Image.value),
                                           width: 160
                                               .r, // Should match the diameter (2 * radius)
                                           height: 160.r,
@@ -61,7 +61,7 @@ class UpdateProfileScreen extends GetView<EditProfileController> {
                               right: 5,
                               child: InkWell(
                                 onTap: () {
-                                  controller.pickImage();
+                                  controller.pickCahalanImage();
                                   // Add edit profile picture functionality here
                                 },
                                 child: Container(

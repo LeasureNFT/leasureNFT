@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:leasure_nft/app/users/screens/dashboard/profile/controller/profile_controller.dart';
 
@@ -40,7 +42,7 @@ class EditProfileController extends GetxController {
         emailController.text = data['email'] ?? '';
         password = data['password'] ?? '';
 
-        profileImage.value = data['image'] ?? ''; // Base64 or empty string
+        base64Image.value = data['image'] ?? ''; // Base64 or empty string
       }
     } catch (e) {
       print("❌ Error fetching user profile: $e");
@@ -50,19 +52,61 @@ class EditProfileController extends GetxController {
     }
   }
 
-  void pickImage() async {
-    final img = await imgPicker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
-      filePath.value = File(img.path);
-      List<int> imageBytes = await filePath.value!.readAsBytes();
-      base64Image.value = base64Encode(imageBytes);
-      profileImage.value = base64Image.value; // Display new image
-      print("✅ Image Converted to Base64");
-    } else {
-      print("⚠ No Image Selected");
-      Fluttertoast.showToast(msg: "No Image Selected");
+  pickCahalanImage() async {
+    try {
+      final XFile? img = await imgPicker.pickImage(source: ImageSource.gallery);
+
+      if (img == null) {
+        print("⚠ No Image Selected");
+        return;
+      }
+
+      Uint8List imageBytes;
+
+      if (GetPlatform.isWeb) {
+        // Web: Directly read image bytes
+        imageBytes = await img.readAsBytes();
+        print("🌐 Running on Web");
+      } else {
+        // Mobile/Desktop: Read file from path
+        filePath.value = File(img.path);
+        imageBytes = await filePath.value!.readAsBytes();
+        print("📱 Running on Mobile/Desktop");
+      }
+
+      // 🔹 Compress Image Before Base64 Encoding
+      Uint8List compressedBytes = await compressImage(imageBytes);
+
+      // Convert to Base64
+      base64Image.value = base64Encode(compressedBytes);
+      print(
+          "✅ Image Converted to Base64 (Size: ${compressedBytes.length} bytes)");
+    } catch (e) {
+      print("❌ Error picking image: $e");
     }
-    update();
+  }
+
+// 🔥 Image Compression Function
+  Future<Uint8List> compressImage(Uint8List imageBytes) async {
+    try {
+      img.Image? originalImage = img.decodeImage(imageBytes);
+      if (originalImage == null) {
+        print("⚠ Failed to decode image");
+        return imageBytes;
+      }
+
+      // Resize & Compress Image
+      img.Image resizedImage =
+          img.copyResize(originalImage, width: 800); // Reduce width
+      Uint8List compressedBytes =
+          img.encodeJpg(resizedImage, quality: 70); // 70% quality
+
+      print("📉 Image Compressed Successfully");
+      return compressedBytes;
+    } catch (e) {
+      print("❌ Error compressing image: $e");
+      return imageBytes; // Return original if compression fails
+    }
   }
 
   Future<void> updateProfile() async {

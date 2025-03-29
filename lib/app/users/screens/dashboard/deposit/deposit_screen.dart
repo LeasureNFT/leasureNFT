@@ -22,7 +22,8 @@ class DepositScreen extends GetView<DepositController> {
                     Header(
                         title: "Select Payment Method",
                         ontap: () {
-                          final controller1 = Get.find<UserDashboardController>();
+                          final controller1 =
+                              Get.find<UserDashboardController>();
                           controller1.changePage(DashboardTab.home.index);
                         }),
                     SizedBox(height: 20.h),
@@ -51,7 +52,7 @@ class DepositScreen extends GetView<DepositController> {
                                         Get.to(() => PaymentDetailScreen(
                                               payment: payment,
                                             ));
-                                        // print(payment);
+                                        print(payment);
                                       },
                                       child: Card(
                                         elevation: 5,

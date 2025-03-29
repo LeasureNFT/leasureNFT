@@ -121,6 +121,7 @@ class SignupController extends GetxController {
           'reward': '0',
           'deviceId': deviceId,
           'cashVault': '0',
+          "isUserBanned":false,
           'refferredBy': refferalCodeController.text.isEmpty
               ? ""
               : refferalCodeController.text,
